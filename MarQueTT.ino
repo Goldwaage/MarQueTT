@@ -5,6 +5,9 @@
 const char* ssid = "";
 const char* password = "";
 const char* mqtt_server = "";
+const int mqtt_port = 1883;
+const char* mqtt_user = "";
+const char* mqtt_password = "";
 const int LEDMATRIX_SEGMENTS = 4;
 const uint8_t LEDMATRIX_CS_PIN = D4;
 char text[4096];
@@ -25,8 +28,9 @@ PubSubClient client(espClient);
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, mqtt_port);
   client.setCallback(callback);
+  //client.connect("***REMOVED***Client", mqtt_user, mqtt_password);
   for (int i = 0; i < sizeof(text); i++) {
     text[i] = initialText[i];
   }
@@ -174,7 +178,7 @@ void reconnect() {
     Serial.print("Attempting MQTT connection...");
     String clientId = "ESP8266Client-";
     clientId += String(random(0xffff), HEX);
-    if (client.connect(clientId.c_str())) {
+    if (client.connect(clientId.c_str(), mqtt_user, mqtt_password)) {
       Serial.println("connected");
       client.subscribe("ledMatrix/enable");
       client.subscribe("ledMatrix/intensity");
